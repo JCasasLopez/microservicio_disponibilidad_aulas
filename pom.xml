@@ -56,9 +56,15 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+<<<<<<< HEAD
 			<groupId>com.example</groupId>
 			<artifactId>32_microservicio_hoteles</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+=======
+		    <groupId>com.h2database</groupId>
+		    <artifactId>h2</artifactId>
+		    <scope>test</scope>
+>>>>>>> d080d79 (Acabado Service con tests)
 		</dependency>
 	</dependencies>
 
