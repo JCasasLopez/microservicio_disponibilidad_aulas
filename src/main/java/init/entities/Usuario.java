@@ -1,30 +1,40 @@
 package init.entities;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name="usuarios")
 public class Usuario {
-<<<<<<< HEAD
 	//No hace falta establecer la relación entre Usuario y Reserva (no va a haber búsquedas
 	//que relacionen ambas, ni se va a persistir ninguna entidad)
-=======
+
 	//Aunque no sería estrictamente necesario para la lógica de negocio del microservicio declarar
 	//la relación de dependencia en ambas direcciones, si que es conveniente para los tests.
->>>>>>> d080d79 (Acabado Service con tests)
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private int idUsuario;
+    @Column(unique = true)
 	private String email;
 	private String nombre;
 	private String apellidos;
 	private LocalDate fechaNacimiento;
 	private String password;
+	@OneToMany(mappedBy="usuario")
+	private List<Reserva> reservas;
 	
-	public Usuario(String email, String nombre, String apellidos, LocalDate fechaNacimiento, String password) {
+	public Usuario(int idUsuario, String email, String nombre, String apellidos, LocalDate fechaNacimiento,
+			String password) {
 		super();
+		this.idUsuario = idUsuario;
 		this.email = email;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
@@ -34,6 +44,14 @@ public class Usuario {
 
 	public Usuario() {
 		super();
+	}
+
+	public int getIdUsuario() {
+		return idUsuario;
+	}
+
+	public void setIdUsuario(int idUsuario) {
+		this.idUsuario = idUsuario;
 	}
 
 	public String getEmail() {
@@ -75,5 +93,15 @@ public class Usuario {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public List<Reserva> getReservas() {
+		return reservas;
+	}
+
+	public void setReservas(List<Reserva> reservas) {
+		this.reservas = reservas;
+	}
+	
+	
 	
 }

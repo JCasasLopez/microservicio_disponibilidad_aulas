@@ -9,7 +9,7 @@ import init.model.AulaDto;
 public class Mapeador {
 	
 	public AulaDto aulaToAulaDto(Aula aula) {
-		return new AulaDto(aula.getId(),
+		return new AulaDto(aula.getIdAula(),
 						aula.getNombre(),
 						aula.getCapacidad(),
 						aula.isProyector(),

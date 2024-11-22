@@ -1,6 +1,8 @@
 package init.entities;
 
 import java.util.List;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,7 +15,8 @@ import jakarta.persistence.Table;
 public class Aula {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private int idAula;
+    @Column(unique = true)
 	private String nombre;
 	private int capacidad;
 	private boolean proyector;
@@ -21,9 +24,9 @@ public class Aula {
 	@OneToMany(mappedBy="aula")
 	private List<Reserva> reservas;
 	
-	public Aula(int id, String nombre, int capacidad, boolean proyector, boolean altavoces) {
+	public Aula(int idAula, String nombre, int capacidad, boolean proyector, boolean altavoces) {
 		super();
-		this.id = id;
+		this.idAula = idAula;
 		this.nombre = nombre;
 		this.capacidad = capacidad;
 		this.proyector = proyector;
@@ -34,12 +37,12 @@ public class Aula {
 		super();
 	}
 
-	public int getId() {
-		return id;
+	public int getIdAula() {
+		return idAula;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setIdAula(int idAula) {
+		this.idAula = idAula;
 	}
 
 	public String getNombre() {
@@ -65,7 +68,7 @@ public class Aula {
 	public void setProyector(boolean proyector) {
 		this.proyector = proyector;
 	}
-	
+
 	public boolean isAltavoces() {
 		return altavoces;
 	}
@@ -81,5 +84,5 @@ public class Aula {
 	public void setReservas(List<Reserva> reservas) {
 		this.reservas = reservas;
 	}
-	
+
 }
