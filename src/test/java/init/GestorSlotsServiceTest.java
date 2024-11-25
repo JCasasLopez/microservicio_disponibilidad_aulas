@@ -16,11 +16,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import config.ConfiguracionHoraria;
-import exceptions.SlotNotFoundException;
+import init.config.ConfiguracionHoraria;
 import init.entities.Aula;
 import init.entities.Reserva;
 import init.entities.Usuario;
+import init.exceptions.SlotNotFoundException;
 import init.model.SlotDto;
 import init.service.GestorSlotsService;
 

@@ -23,10 +23,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import config.ConfiguracionHoraria;
+import init.config.ConfiguracionHoraria;
 import init.dao.AulasDao;
 import init.dao.ReservasDao;
 import init.entities.Aula;
+import init.model.AulaDto;
 import init.service.DisponibilidadServiceImpl;
 import init.service.GestorSlotsService;
 
@@ -128,7 +129,7 @@ public class DisponibilidadServiceTest {
 		//Act
 		//Queremos obtener las aulas que, estando disponibles entre inicio y fin, tengan una 
 		//capacidad de al menos 20 personas y estén equipadas con altavoces.
-		List<Aula> aulasDisponibles = disponibilidadService.aulasDisponibles(inicio, fin, 
+		List<AulaDto> aulasDisponibles = disponibilidadService.aulasDisponibles(inicio, fin, 
 																	capacidad, proyector, altavoces);
 		
 		//Assert

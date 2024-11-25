@@ -1,4 +1,4 @@
-package config;
+package init.config;
 
 public class ConfiguracionHoraria {
 	private final int horaApertura;

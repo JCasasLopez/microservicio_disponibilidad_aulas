@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import config.ConfiguracionHoraria;
-import exceptions.SlotNotFoundException;
+import init.config.ConfiguracionHoraria;
 import init.entities.Reserva;
+import init.exceptions.SlotNotFoundException;
 import init.model.SlotDto;
 
 public class GestorSlotsService {

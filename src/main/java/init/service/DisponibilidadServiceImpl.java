@@ -7,12 +7,13 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import config.ConfiguracionHoraria;
+import init.config.ConfiguracionHoraria;
 import init.dao.AulasDao;
 import init.dao.ReservasDao;
-import init.entities.Aula;
 import init.entities.Reserva;
+import init.model.AulaDto;
 import init.model.SlotDto;
+import init.utilidades.Mapeador;
 
 @Service
 public class DisponibilidadServiceImpl implements DisponibilidadService {
@@ -21,18 +22,20 @@ public class DisponibilidadServiceImpl implements DisponibilidadService {
 	AulasDao aulasDao;
 	GestorSlotsService gestorSlotsService;
 	ConfiguracionHoraria configHoraria;
+	Mapeador mapeador;
 
 	public DisponibilidadServiceImpl(ReservasDao reservasDao, AulasDao aulasDao, 
 												GestorSlotsService gestorSlotsService,
-												ConfiguracionHoraria configHoraria) {
+												ConfiguracionHoraria configHoraria, Mapeador mapeador) {
 		this.reservasDao = reservasDao;
 		this.aulasDao = aulasDao; 
 		this.gestorSlotsService = gestorSlotsService;
 		this.configHoraria = configHoraria;
+		this.mapeador = mapeador;
 	}
 
 	@Override
-	public List<Aula> aulasDisponibles(LocalDateTime horaInicio, LocalDateTime horaFin, int capacidad,
+	public List<AulaDto> aulasDisponibles(LocalDateTime horaInicio, LocalDateTime horaFin, int capacidad,
 														boolean proyector, boolean altavoces) {
 		//Cuando estas condiciones son 'true' significa que el usuario las pone como condición,
 		//es decir, quiere un aula con proyector, altavoces o una determinada capacidad.
@@ -54,6 +57,7 @@ public class DisponibilidadServiceImpl implements DisponibilidadService {
 				//todas las aulas.
 									.filter(a -> condicionProyector ? a.isProyector() : true)
 									.filter(a -> condicionAltavoces ? a.isAltavoces() : true)
+									.map(a -> mapeador.aulaToAulaDto(a))
 									.toList();
 		
 	}

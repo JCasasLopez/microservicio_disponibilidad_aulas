@@ -1,4 +1,4 @@
-package exceptions;
+package init.exceptions;
 
 public class SlotNotFoundException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
