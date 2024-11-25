@@ -29,12 +29,11 @@ public class DisponibilidadController {
 
 	@GetMapping(value="aulasDisponibles", produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<AulaDto>> aulasDisponibles(
-	        @RequestParam LocalDateTime horaInicio,
-	        @RequestParam LocalDateTime horaFin,
-	        @RequestParam(defaultValue = "0") int capacidad,
-	        @RequestParam(defaultValue = "false") boolean proyector,
-	        @RequestParam(defaultValue = "false") boolean altavoces){
-	
+										        @RequestParam LocalDateTime horaInicio,
+										        @RequestParam LocalDateTime horaFin,
+										        @RequestParam(defaultValue = "0") int capacidad,
+										        @RequestParam(defaultValue = "false") boolean proyector,
+										        @RequestParam(defaultValue = "false") boolean altavoces){
 		try {
 			
 			if(horaInicio.isAfter(horaFin)) {
@@ -42,21 +41,15 @@ public class DisponibilidadController {
 			}
 			
 			if (capacidad < 0) {
-	            throw new BadRequestException("La capacidad no puede ser negativa");
+	            throw new BadRequestException("La capacidad no puede ser menor de 0");
 	        }
 			
 			List<AulaDto> aulasDisponibles = disponibilidadService.aulasDisponibles(horaInicio, horaFin, 
 																	capacidad, proyector, altavoces);
-			return new ResponseEntity<>(aulasDisponibles, HttpStatus.OK);
+			return new ResponseEntity<>(aulasDisponibles, HttpStatus.OK);  
 			
-		}catch (BadRequestException ex) {
-	        throw ex; 
-	        
-	    } catch (DataAccessException ex) {
-	        throw new InternalServerException("Error al acceder a la base de datos", ex);
-	        
 	    } catch (Exception ex) {
-	        throw new InternalServerException("Error inesperado al buscar aulas disponibles", ex);
+	        throw new InternalServerException("Error al acceder a la base de datos", ex);
 	    }
 	}
 }
