@@ -1,6 +1,6 @@
 package init.controller;
 
-import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +22,10 @@ import init.service.DisponibilidadService;
 public class DisponibilidadController {
 	
 	@Value("${horario.apertura}")
-    private int horaInicio;
+    private int horaApertura;
+	
+	@Value("${horario.cierre}")
+    private int horaCierre;
 	
 	DisponibilidadService disponibilidadService;
 	
@@ -38,7 +41,7 @@ public class DisponibilidadController {
 			@RequestParam(defaultValue = "false") boolean proyector,
 			@RequestParam(defaultValue = "false") boolean altavoces){
 
-		if(horaInicio.isAfter(horaFin)) {
+		if(!horaInicio.isBefore(horaFin)) {
 			throw new BadRequestException("La hora de inicio debe ser anterior a la hora de fin");
 		}
 
@@ -54,15 +57,19 @@ public class DisponibilidadController {
 	
 	@GetMapping(value="crearHorarioAula", produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<SlotDto>> crearHorarioAula(@RequestParam int idAula,
-			@RequestParam LocalDateTime inicioSemana){
+			@RequestParam LocalDate inicioPeriodo, 
+			@RequestParam LocalDate finalPeriodo){
 		
-		if(inicioSemana.getDayOfWeek() != DayOfWeek.MONDAY || inicioSemana.getHour() != horaInicio) {
-			throw new BadRequestException("La fecha tiene que ser un lunes a la hora de apertura");
+		if(!inicioPeriodo.isBefore(finalPeriodo)) {
+			throw new BadRequestException("La fecha de inicio debe ser anterior a la de finalización");
 		}
-
-		List<SlotDto> horarioAula = disponibilidadService.crearHorarioAula(idAula, inicioSemana);
-		return ResponseEntity.ok(horarioAula);
 		
+		LocalDateTime horaInicioPeriodo = inicioPeriodo.atTime(horaApertura, 0 ,0);
+		LocalDateTime horaFinalPeriodo = finalPeriodo.atTime(horaCierre, 0, 0);
+
+		List<SlotDto> horarioAula = disponibilidadService.crearHorarioAula(idAula, horaInicioPeriodo, 
+				horaFinalPeriodo);
+		return ResponseEntity.ok(horarioAula);
 	}
 
 }

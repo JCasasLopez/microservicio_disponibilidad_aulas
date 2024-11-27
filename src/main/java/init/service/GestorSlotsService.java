@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import init.config.ConfiguracionHoraria;
@@ -15,17 +16,21 @@ import init.model.SlotDto;
 public class GestorSlotsService {
 	//Los métodos de esta clase son auxiliares de los métodos principales en DisponibilidadServiceImpl
 	
+	@Value("${horario.apertura}")
+    private int horaApertura;
+	
+	@Value("${horario.cierre}")
+    private int horaCierre;
+	
 	ConfiguracionHoraria configHoraria;
 	
 	public GestorSlotsService(ConfiguracionHoraria configHoraria) {
 		this.configHoraria = configHoraria;
 	}
 
-	public List<SlotDto> crearSlots(int idAula, LocalDateTime inicioSemana) {
-		//Crea la lista de slots para la semana, desde la fecha de inicioSemana
-		//hasta el viernes a la hora definida como de cierre.
+	public List<SlotDto> crearSlots(int idAula, LocalDateTime inicioPeriodo, LocalDateTime finalPeriodo) {
 		List<SlotDto> listaSlots = new ArrayList<>();
-		for(LocalDateTime slot = inicioSemana; slot.getDayOfWeek().getValue() < 6; 
+		for(LocalDateTime slot = inicioPeriodo; slot.isBefore(finalPeriodo); 
 				slot = slot.plusDays(1).withHour(configHoraria.getHoraApertura()).withMinute(0)) {
 			for(; slot.getHour() < configHoraria.getHoraCierre(); slot = slot.plusMinutes(30)) {
 				listaSlots.add(new SlotDto(idAula, slot, slot.plusMinutes(30)));
@@ -35,8 +40,6 @@ public class GestorSlotsService {
 	}
 	
 	public List<SlotDto> actualizarDisponibilidad(List<Reserva> reservasSemana, List<SlotDto> slotsSemana){
-		//A partir de las reservas de un aula para una semana dada y la lista de slots sin actualizar 
-		//actualiza la disponibilidad de esos slots y devuelve una lista de los mismos para mostrarla en el front
 		for(Reserva r:reservasSemana) {
 			for(LocalDateTime hora = r.getHoraInicio(); hora.isBefore(r.getHoraFin()); 
 																hora = hora.plusMinutes(30)) {

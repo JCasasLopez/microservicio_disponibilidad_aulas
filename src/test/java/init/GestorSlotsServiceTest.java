@@ -55,42 +55,28 @@ public class GestorSlotsServiceTest {
 		    "9, 21",   
 		    "8, 21",    
 		    "10, 19"})
-	@DisplayName("Primer slot: lunes a la hora de apertura. Ultimo: viernes a la hora de cierre")
+	@DisplayName("Primer y 'ultimo slot coinciden con inicio y final periodo")
 	void crearSlots_primerSlotYUltimo(int horaApertura, int horaCierre) {
 		//Arrange
 		GestorSlotsService gestorSlotsService = configurarHorario(horaApertura, horaCierre);
-		SlotDto primerSlotSemana = new SlotDto(1, 
+		SlotDto primerSlot = new SlotDto(1, 
 								LocalDateTime.of(2024, 11, 11, horaApertura, 0),
 								LocalDateTime.of(2024, 11, 11, horaApertura, 30));
-		SlotDto ultimoSlotSemana = new SlotDto(1, 
+		SlotDto ultimoSlot = new SlotDto(1, 
 								LocalDateTime.of(2024, 11, 15, horaCierre - 1, 30),
 								LocalDateTime.of(2024, 11, 15, horaCierre, 0));
 
 		//Act
 		List<SlotDto> listaSlots = gestorSlotsService.crearSlots(1, 
-													LocalDateTime.of(2024, 11, 11, horaApertura, 0));
+				LocalDateTime.of(2024, 11, 11, horaApertura, 0),
+				LocalDateTime.of(2024, 11, 15, horaCierre, 0));
 		Collections.sort(listaSlots);
 
 		//Assert
-		Assertions.assertTrue(listaSlots.get(0).equals(primerSlotSemana), 
-				"Se espera " + primerSlotSemana + ", pero se obtuvo " + listaSlots.get(0));
-		Assertions.assertTrue(listaSlots.get(listaSlots.size()-1).equals(ultimoSlotSemana), 
-				"Se espera " + ultimoSlotSemana + ", pero se obtuvo " + listaSlots.get(listaSlots.size()-1));
-	}
-	
-	@Test
-	@DisplayName("Los slots se crean SOLO hasta el viernes a la hora de cierre")
-	void crearSlots_noDeberiaGenerarSlotsEnFinDeSemana() {
-		//Arrange
-		GestorSlotsService gestorSlotsService = configurarHorario(horaInicio, horaFinalizacion);
-	    LocalDateTime inicioSabado = LocalDateTime.of(2024, 11, 16, horaInicio, 0);
-	    
-	    //Act
-	    List<SlotDto> slots = gestorSlotsService.crearSlots(1, inicioSabado);
-	    
-	    //Assert
-	    Assertions.assertTrue(slots.isEmpty(), 
-	    							"No deberían generarse slots para el fin de semana");
+		Assertions.assertTrue(listaSlots.get(0).equals(primerSlot), 
+				"Se espera " + primerSlot + ", pero se obtuvo " + listaSlots.get(0));
+		Assertions.assertTrue(listaSlots.get(listaSlots.size()-1).equals(ultimoSlot), 
+				"Se espera " + ultimoSlot + ", pero se obtuvo " + listaSlots.get(listaSlots.size()-1));
 	}
 	
 	@ParameterizedTest
@@ -103,12 +89,13 @@ public class GestorSlotsServiceTest {
 	void crearSlots_slotsTotalesCreados(int horaApertura, int horaCierre) {
 		//Arrange
 		GestorSlotsService gestorSlotsService = configurarHorario(horaApertura, horaCierre);
-		LocalDateTime horaInicioSemana = LocalDateTime.of(2024, 11, 11, horaApertura, 0);
+		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, horaApertura, 0); 
+		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 15, horaCierre, 0);
 		//Calcula el número a partir de las horas de cierre, apertura y longitud del intervalo.
 		int numeroSlotsTotales = (((horaCierre - horaApertura) * 60)/ 30) * 5;
 		
 		//Act
-		List<SlotDto> listaSlots = gestorSlotsService.crearSlots(1, horaInicioSemana);
+		List<SlotDto> listaSlots = gestorSlotsService.crearSlots(1, inicioPeriodo, finalPeriodo);
 				
 		//Assert
 		Assertions.assertEquals(numeroSlotsTotales, listaSlots.size(), 

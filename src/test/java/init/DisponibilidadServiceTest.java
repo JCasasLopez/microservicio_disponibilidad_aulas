@@ -4,9 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,10 +36,10 @@ import init.utilidades.Mapeador;
 public class DisponibilidadServiceTest {
 	
 	@Value("${horario.apertura}")
-    private int horaInicio;
+    private int horaApertura;
     
     @Value("${horario.cierre}")
-    private int horaFinalizacion;
+    private int horaCierre;
     
 	@Mock
 	ReservasDao reservasDao;
@@ -56,48 +54,21 @@ public class DisponibilidadServiceTest {
 	@InjectMocks
     DisponibilidadServiceImpl disponibilidadService;
 	
-	private LocalDateTime calcularFechaViernes(LocalDateTime inicioSemana) {
-		//Para comprobar que la fecha devuelta es correcta solo hace falta este cálculo, no el 
-		//método entero crearHorarioAula(), así que extraemos esta parte.
-	    return inicioSemana.with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY))
-	                      .withHour(horaFinalizacion)
-	                      .withMinute(0);
-	}
-	
-	@Test
-	@DisplayName("Devuelve el viernes de esa semana a la hora de cierre")
-	void calcularFechaViernes_deberiaObtenerElViernesDeEsaSemana() {
-		//Como en el Controller se valida que inicioSemana sea lunes (ver calcularFechaViernes(), arriba)
-		//no voy a escribir ningún test para el caso de que inicioSemana sea otro día. El método no tiene
-		//ningún mecanismo de protección para otros casos, luego no tiene sentido testearlos.
-		
-		//Arrange
-		
-		//Act
-		LocalDateTime viernes = calcularFechaViernes(LocalDateTime.of(2024, 11, 11, horaInicio, 0));
-		
-		//Assert
-		Assertions.assertEquals(viernes, LocalDateTime.of(2024, 11, 15, horaFinalizacion, 0));
-	}
-	
 	@Test
 	@DisplayName("El flujo de llamadas a los servicios es correcto")
 	void crearHorarioAula_deberiaLlamarServiciosEnOrdenCorrecto() {
 	    //Arrange
 		int idAula = 1;
-	    LocalDateTime inicioSemana = LocalDateTime.of(2024, 11, 11, horaInicio, 0); 
-	    LocalDateTime viernesCierre = calcularFechaViernes(inicioSemana);
-	    
-	    //El resto de llamadas nos vale con lo que devuelven por defecto
-	    when(configHoraria.getHoraCierre()).thenReturn(horaFinalizacion);
+		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, horaApertura, 0); 
+		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 15, horaCierre, 0);
 	    
 	    //Act
-	    disponibilidadService.crearHorarioAula(idAula, inicioSemana);    
+	    disponibilidadService.crearHorarioAula(idAula, inicioPeriodo, finalPeriodo);    
 
 	    //Assert
 	    var inOrder = inOrder(reservasDao, gestorSlotsService);
-	    inOrder.verify(reservasDao).findByAulaAndFechas(idAula, inicioSemana, viernesCierre);
-	    inOrder.verify(gestorSlotsService).crearSlots(idAula, inicioSemana);
+	    inOrder.verify(reservasDao).findByAulaAndFechas(idAula, inicioPeriodo, finalPeriodo);
+	    inOrder.verify(gestorSlotsService).crearSlots(idAula, inicioPeriodo, finalPeriodo);
 	    inOrder.verify(gestorSlotsService).actualizarDisponibilidad(any(), any());
 	}
 	

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import init.exceptions.BadRequestException;
+import init.exceptions.NoSuchClassroomException;
 import init.exceptions.SlotNotFoundException;
 
 @ControllerAdvice
@@ -19,6 +20,11 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(SlotNotFoundException.class)
 	public ResponseEntity<String> handleSlotNotFoundException(SlotNotFoundException ex){
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(NoSuchClassroomException.class)
+	public ResponseEntity<String> handleNoSuchClassroomException(NoSuchClassroomException ex){
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
 }

@@ -1,22 +1,28 @@
 package init.service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import init.config.ConfiguracionHoraria;
 import init.dao.AulasDao;
 import init.dao.ReservasDao;
 import init.entities.Reserva;
+import init.exceptions.NoSuchClassroomException;
 import init.model.AulaDto;
 import init.model.SlotDto;
 import init.utilidades.Mapeador;
 
 @Service
 public class DisponibilidadServiceImpl implements DisponibilidadService {
+	
+	@Value("${horario.apertura}")
+    private int horaApertura;
+	
+	@Value("${horario.cierre}")
+    private int horaCierre;
 
 	ReservasDao reservasDao;
 	AulasDao aulasDao;
@@ -59,23 +65,18 @@ public class DisponibilidadServiceImpl implements DisponibilidadService {
 									.filter(a -> condicionAltavoces ? a.isAltavoces() : true)
 									.map(a -> mapeador.aulaToAulaDto(a))
 									.toList();
-		
 	}
 
 	@Override
-	public List<SlotDto> crearHorarioAula(int idAula, LocalDateTime inicioSemana){
-		//Actualiza la disponibilidad de cada slot para ese aula: comprueba las reservas para esa semana
-		//cambiando el estado del slot a NO disponible si hay una reserva activa con ese horario. 
-		
-		//En el Controller se valida que inicioSemana sea un lunes (hora de apertura). 
-		//Por ese motivo, en este método no hay validaciones ni se lanzan ninguna excepción, etc
-		//y, por tanto, el único test es para el "happy path" (inicioSemana = lunes)
-		LocalDateTime viernesCierre = inicioSemana.with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY))
-											    .withHour(configHoraria.getHoraCierre())
-											    .withMinute(0);
-		List<Reserva> reservasSemana = reservasDao.findByAulaAndFechas(idAula, inicioSemana, viernesCierre);
-		List<SlotDto> slotsSemana = gestorSlotsService.crearSlots(idAula, inicioSemana);
-		return gestorSlotsService.actualizarDisponibilidad(reservasSemana, slotsSemana);
+	public List<SlotDto> crearHorarioAula(int idAula, LocalDateTime inicioPeriodo, LocalDateTime finalPeriodo){
+		//Crea slots para ese período de tiempo y luego actualiza su disponibilidad a partir de las 
+		//reservas para ese período
+		if(aulasDao.existsById(idAula)) {
+			List<Reserva> reservasSemana = reservasDao.findByAulaAndFechas(idAula, inicioPeriodo, finalPeriodo);
+			List<SlotDto> slotsSemana = gestorSlotsService.crearSlots(idAula, inicioPeriodo, finalPeriodo);
+			return gestorSlotsService.actualizarDisponibilidad(reservasSemana, slotsSemana);
+		}
+			throw new NoSuchClassroomException("No existe ningún aula con ese id");
 	}
 
 }
