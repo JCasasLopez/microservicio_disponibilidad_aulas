@@ -27,7 +27,6 @@ public class DisponibilidadController {
 	DisponibilidadService disponibilidadService;
 	
 	public DisponibilidadController(DisponibilidadService disponibilidadService) {
-		super();
 		this.disponibilidadService = disponibilidadService;
 	}
 

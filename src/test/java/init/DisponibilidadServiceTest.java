@@ -30,6 +30,7 @@ import init.entities.Aula;
 import init.model.AulaDto;
 import init.service.DisponibilidadServiceImpl;
 import init.service.GestorSlotsService;
+import init.utilidades.Mapeador;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SpringExtension.class)
@@ -50,6 +51,8 @@ public class DisponibilidadServiceTest {
 	ConfiguracionHoraria configHoraria;
 	@Mock
 	GestorSlotsService gestorSlotsService;
+	@Mock
+	Mapeador mapeador;
 	@InjectMocks
     DisponibilidadServiceImpl disponibilidadService;
 	
