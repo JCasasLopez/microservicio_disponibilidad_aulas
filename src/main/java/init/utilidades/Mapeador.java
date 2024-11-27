@@ -13,7 +13,6 @@ public class Mapeador {
 						aula.getNombre(),
 						aula.getCapacidad(),
 						aula.isProyector(),
-						aula.isAltavoces(),
-						aula.getReservas());
+						aula.isAltavoces());
 	}
 }

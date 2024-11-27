@@ -4,11 +4,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import init.config.ConfiguracionHoraria;
 import init.entities.Reserva;
 import init.exceptions.SlotNotFoundException;
 import init.model.SlotDto;
 
+@Component
 public class GestorSlotsService {
 	//Los métodos de esta clase son auxiliares de los métodos principales en DisponibilidadServiceImpl
 	

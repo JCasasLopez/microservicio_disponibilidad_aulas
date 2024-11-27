@@ -16,12 +16,6 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 	
-	@ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGenericException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                              .body("Error al acceder a la base de datos.");
-    }
-	
 	@ExceptionHandler(SlotNotFoundException.class)
 	public ResponseEntity<String> handleSlotNotFoundException(SlotNotFoundException ex){
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
