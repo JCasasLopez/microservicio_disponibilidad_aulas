@@ -25,6 +25,7 @@ import init.config.ConfiguracionHoraria;
 import init.dao.AulasDao;
 import init.dao.ReservasDao;
 import init.entities.Aula;
+import init.exceptions.NoSuchClassroomException;
 import init.model.AulaDto;
 import init.service.DisponibilidadServiceImpl;
 import init.service.GestorSlotsService;
@@ -61,6 +62,7 @@ public class DisponibilidadServiceTest {
 		int idAula = 1;
 		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, horaApertura, 0); 
 		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 15, horaCierre, 0);
+		when(aulasDao.existsById(idAula)).thenReturn(true);
 	    
 	    //Act
 	    disponibilidadService.crearHorarioAula(idAula, inicioPeriodo, finalPeriodo);    
@@ -70,6 +72,22 @@ public class DisponibilidadServiceTest {
 	    inOrder.verify(reservasDao).findByAulaAndFechas(idAula, inicioPeriodo, finalPeriodo);
 	    inOrder.verify(gestorSlotsService).crearSlots(idAula, inicioPeriodo, finalPeriodo);
 	    inOrder.verify(gestorSlotsService).actualizarDisponibilidad(any(), any());
+	}
+	
+	@Test
+	@DisplayName("Lanza NoSuchClasroomException cuando no encuentra el aula")
+	void crarHorarioAula_deberiaLanzarNoSuchClasroomException() {
+		//Arrange
+		int idAula = 1;
+		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, horaApertura, 0); 
+		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 15, horaCierre, 0);
+		when(aulasDao.existsById(idAula)).thenReturn(false);
+		
+		//Act
+		
+		//Assert
+		Assertions.assertThrows(NoSuchClassroomException.class , 
+				() -> disponibilidadService.crearHorarioAula(idAula, inicioPeriodo, finalPeriodo));
 	}
 	
 	@ParameterizedTest
