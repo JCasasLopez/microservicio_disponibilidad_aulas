@@ -66,7 +66,8 @@ public class DisponibilidadControllerCapaWebTest {
 		MvcResult mcvResult = mockMvc.perform(requestBuilder).andReturn();
 		
 		//Assert
-		Assertions.assertEquals(HttpStatus.OK.value(), mcvResult.getResponse().getStatus());
+		Assertions.assertEquals(HttpStatus.OK.value(), mcvResult.getResponse().getStatus(), 
+				"El estatus HTTP devuelto es incorrecto");
 		
 		String responseContent = mcvResult.getResponse().getContentAsString();
 		//TypeReference es necesario porque Java pierde la información de tipos genéricos en 
@@ -74,8 +75,10 @@ public class DisponibilidadControllerCapaWebTest {
 		//qué tipo de objeto debe crear: una Lista de AulaDto.
 		List<AulaDto> responseAulas = objectMapper.readValue(responseContent, 
 	            new TypeReference<List<AulaDto>>() {});
-		Assertions.assertEquals(1, responseAulas.size());
-		Assertions.assertEquals("aula1", responseAulas.get(0).getNombre());
+		Assertions.assertEquals(1, responseAulas.size(), 
+				"La lista no contiene el número de aulas esperada");
+		Assertions.assertEquals("aula1", responseAulas.get(0).getNombre(), 
+				"La lista contiene aulas diferentes a las esperadas");
 	}
 	
 	@ParameterizedTest
@@ -104,6 +107,34 @@ public class DisponibilidadControllerCapaWebTest {
 		MvcResult mcvResult = mockMvc.perform(requestBuilder).andReturn();
 		
 		//Assert
-		Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), mcvResult.getResponse().getStatus());
+		Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), mcvResult.getResponse().getStatus(), 
+				"El estatus HTTP devuelto es incorrecto");
+	}
+	
+	@Test
+	@DisplayName("La capacidad no puede ser negativa")
+	void aulasDisponibles_lanzaExcepcionSiCapacidadNegativa() throws Exception {
+		//Arrange
+				AulaDto aula1 = new AulaDto(0, "aula1", 20, false, false);
+				List<AulaDto> aulasDisponibles = List.of(aula1);
+				LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, 11, 0);
+				LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 11, 12, 0); 
+				when(disponibilidadService.aulasDisponibles(inicioPeriodo, finalPeriodo, -10, false, false))
+													.thenReturn(aulasDisponibles);
+				
+				RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/aulasDisponibles")
+						 .param("horaInicio", inicioPeriodo.toString())  
+		                 .param("horaFin", finalPeriodo.toString())
+		                 .param("capacidad", "-10")
+		                 .param("proyector", "false")
+		                 .param("altavoces", "false")
+		                 .accept(MediaType.APPLICATION_JSON);
+				
+		//Act
+		MvcResult mcvResult = mockMvc.perform(requestBuilder).andReturn();
+		
+		//Assert
+		Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), mcvResult.getResponse().getStatus(), 
+				"El estatus HTTP devuelto es incorrecto");
 	}
 }
