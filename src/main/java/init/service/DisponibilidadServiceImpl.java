@@ -3,7 +3,6 @@ package init.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import init.config.ConfiguracionHoraria;
@@ -18,12 +17,6 @@ import init.utilidades.Mapeador;
 @Service
 public class DisponibilidadServiceImpl implements DisponibilidadService {
 	
-	@Value("${horario.apertura}")
-    private int horaApertura;
-	
-	@Value("${horario.cierre}")
-    private int horaCierre;
-
 	ReservasDao reservasDao;
 	AulasDao aulasDao;
 	GestorSlotsService gestorSlotsService;

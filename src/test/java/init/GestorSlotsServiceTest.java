@@ -27,6 +27,9 @@ import init.service.GestorSlotsService;
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(locations = "classpath:application.properties")
 public class GestorSlotsServiceTest {
+	//No uso la inyección de dependencia porque no es necesario levantar todo el contexto de Spring
+    //con @SpringBootTest. Esta clase solo contiene tests unitarios que no tienen ninguna dependencia
+	//excepto ConfiguracionHoraria
 	
 	@Value("${horario.apertura}")
     private int horaInicio;

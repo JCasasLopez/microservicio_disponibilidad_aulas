@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import init.config.ConfiguracionHoraria;
@@ -15,12 +14,6 @@ import init.model.SlotDto;
 @Component
 public class GestorSlotsService {
 	//Los métodos de esta clase son auxiliares de los métodos principales en DisponibilidadServiceImpl
-	
-	@Value("${horario.apertura}")
-    private int horaApertura;
-	
-	@Value("${horario.cierre}")
-    private int horaCierre;
 	
 	ConfiguracionHoraria configHoraria;
 	

@@ -17,11 +17,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import init.config.ConfiguracionHoraria;
 import init.dao.AulasDao;
 import init.dao.ReservasDao;
 import init.entities.Aula;
@@ -32,22 +28,12 @@ import init.service.GestorSlotsService;
 import init.utilidades.Mapeador;
 
 @ExtendWith(MockitoExtension.class)
-@ExtendWith(SpringExtension.class)
-@TestPropertySource(locations = "classpath:application.properties")
 public class DisponibilidadServiceTest {
 	
-	@Value("${horario.apertura}")
-    private int horaApertura;
-    
-    @Value("${horario.cierre}")
-    private int horaCierre;
-    
 	@Mock
 	ReservasDao reservasDao;
 	@Mock	
 	AulasDao aulasDao;
-	@Mock
-	ConfiguracionHoraria configHoraria;
 	@Mock
 	GestorSlotsService gestorSlotsService;
 	@Mock
@@ -60,8 +46,8 @@ public class DisponibilidadServiceTest {
 	void crearHorarioAula_deberiaLlamarServiciosEnOrdenCorrecto() {
 	    //Arrange
 		int idAula = 1;
-		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, horaApertura, 0); 
-		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 15, horaCierre, 0);
+		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, 9, 0); 
+		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 15, 22, 0);
 		when(aulasDao.existsById(idAula)).thenReturn(true);
 	    
 	    //Act
@@ -79,8 +65,8 @@ public class DisponibilidadServiceTest {
 	void crarHorarioAula_deberiaLanzarNoSuchClasroomException() {
 		//Arrange
 		int idAula = 1;
-		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, horaApertura, 0); 
-		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 15, horaCierre, 0);
+		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, 9, 0); 
+		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 15, 22, 0);
 		when(aulasDao.existsById(idAula)).thenReturn(false);
 		
 		//Act
