@@ -41,26 +41,33 @@ public class DisponibilidadControllerCapaWebTest {
 	
 	@MockBean
 	ConfiguracionHoraria configuracionHoraria;
-
+	
+	//Métodos auxiliares para reducir la cantidad de código "boilerplate"
+	private List<AulaDto> crearListaAulas() {
+		AulaDto aula1 = new AulaDto(0, "aula1", 20, false, false);
+		return List.of(aula1);
+	}
+	
+	private RequestBuilder crearRequestBuilder(LocalDateTime inicioPeriodo, LocalDateTime finalPeriodo,
+			int capacidad, boolean proyector, boolean altavoces) {
+		return MockMvcRequestBuilders.get("/aulasDisponibles")
+				.param("horaInicio", inicioPeriodo.toString())  
+				.param("horaFin", finalPeriodo.toString())
+				.param("capacidad", String.valueOf(capacidad))
+				.param("proyector", String.valueOf(proyector))
+				.param("altavoces", String.valueOf(altavoces))
+				.accept(MediaType.APPLICATION_JSON);
+	}
 
 	@Test
 	@DisplayName("Devuelve la lista de aulas disponibles")
 	void aulasDisponibles() throws Exception {
 		//Arrange
-		AulaDto aula1 = new AulaDto(0, "aula1", 20, false, false);
-		List<AulaDto> aulasDisponibles = List.of(aula1);
 		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, 10, 0); 
 		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 11, 11, 0);
 		when(disponibilidadService.aulasDisponibles(inicioPeriodo, finalPeriodo, 10, false, false))
-											.thenReturn(aulasDisponibles);
-		
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/aulasDisponibles")
-				 .param("horaInicio", inicioPeriodo.toString())  
-                 .param("horaFin", finalPeriodo.toString())
-                 .param("capacidad", "10")
-                 .param("proyector", "false")
-                 .param("altavoces", "false")
-                 .accept(MediaType.APPLICATION_JSON);
+											.thenReturn(crearListaAulas());
+		RequestBuilder requestBuilder = crearRequestBuilder(inicioPeriodo, finalPeriodo, 10, false, false);
 		
 		//Act
 		MvcResult mcvResult = mockMvc.perform(requestBuilder).andReturn();
@@ -88,20 +95,12 @@ public class DisponibilidadControllerCapaWebTest {
 	@DisplayName("Lanza excepción si el inicio no es anterior a la finalización")
 	void aulasDisponibles_lanzaExcepcionSiHorasNoSonCorrectas(int horaInicio, int horaFinal) throws Exception {
 		//Arrange
-				AulaDto aula1 = new AulaDto(0, "aula1", 20, false, false);
-				List<AulaDto> aulasDisponibles = List.of(aula1);
-				LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, horaInicio, 0);
-				LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 11, horaFinal, 0); 
-				when(disponibilidadService.aulasDisponibles(inicioPeriodo, finalPeriodo, 10, false, false))
-													.thenReturn(aulasDisponibles);
+		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, horaInicio, 0);
+		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 11, horaFinal, 0); 
+		when(disponibilidadService.aulasDisponibles(inicioPeriodo, finalPeriodo, 10, false, false))
+													.thenReturn(crearListaAulas());
 				
-				RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/aulasDisponibles")
-						 .param("horaInicio", inicioPeriodo.toString())  
-		                 .param("horaFin", finalPeriodo.toString())
-		                 .param("capacidad", "10")
-		                 .param("proyector", "false")
-		                 .param("altavoces", "false")
-		                 .accept(MediaType.APPLICATION_JSON);
+		RequestBuilder requestBuilder = crearRequestBuilder(inicioPeriodo, finalPeriodo, 10, false, false);
 				
 		//Act
 		MvcResult mcvResult = mockMvc.perform(requestBuilder).andReturn();
@@ -115,20 +114,12 @@ public class DisponibilidadControllerCapaWebTest {
 	@DisplayName("La capacidad no puede ser negativa")
 	void aulasDisponibles_lanzaExcepcionSiCapacidadNegativa() throws Exception {
 		//Arrange
-				AulaDto aula1 = new AulaDto(0, "aula1", 20, false, false);
-				List<AulaDto> aulasDisponibles = List.of(aula1);
-				LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, 11, 0);
-				LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 11, 12, 0); 
-				when(disponibilidadService.aulasDisponibles(inicioPeriodo, finalPeriodo, -10, false, false))
-													.thenReturn(aulasDisponibles);
+		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, 11, 0);
+		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 11, 12, 0); 
+		when(disponibilidadService.aulasDisponibles(inicioPeriodo, finalPeriodo, -10, false, false))
+													.thenReturn(crearListaAulas());
 				
-				RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/aulasDisponibles")
-						 .param("horaInicio", inicioPeriodo.toString())  
-		                 .param("horaFin", finalPeriodo.toString())
-		                 .param("capacidad", "-10")
-		                 .param("proyector", "false")
-		                 .param("altavoces", "false")
-		                 .accept(MediaType.APPLICATION_JSON);
+		RequestBuilder requestBuilder = crearRequestBuilder(inicioPeriodo, finalPeriodo, -10, false, false);
 				
 		//Act
 		MvcResult mcvResult = mockMvc.perform(requestBuilder).andReturn();
