@@ -8,6 +8,8 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -48,7 +50,7 @@ public class DisponibilidadControllerCapaWebTest {
 		AulaDto aula1 = new AulaDto(0, "aula1", 20, false, false);
 		List<AulaDto> aulasDisponibles = List.of(aula1);
 		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, 10, 0); 
-		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 15, 11, 0);
+		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 11, 11, 0);
 		when(disponibilidadService.aulasDisponibles(inicioPeriodo, finalPeriodo, 10, false, false))
 											.thenReturn(aulasDisponibles);
 		
@@ -74,5 +76,34 @@ public class DisponibilidadControllerCapaWebTest {
 	            new TypeReference<List<AulaDto>>() {});
 		Assertions.assertEquals(1, responseAulas.size());
 		Assertions.assertEquals("aula1", responseAulas.get(0).getNombre());
+	}
+	
+	@ParameterizedTest
+	@CsvSource ({"12, 11",  
+		    "21, 21",   
+		    })
+	@DisplayName("Lanza excepción si el inicio no es anterior a la finalización")
+	void aulasDisponibles_lanzaExcepcionSiHorasNoSonCorrectas(int horaInicio, int horaFinal) throws Exception {
+		//Arrange
+				AulaDto aula1 = new AulaDto(0, "aula1", 20, false, false);
+				List<AulaDto> aulasDisponibles = List.of(aula1);
+				LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, horaInicio, 0);
+				LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 11, horaFinal, 0); 
+				when(disponibilidadService.aulasDisponibles(inicioPeriodo, finalPeriodo, 10, false, false))
+													.thenReturn(aulasDisponibles);
+				
+				RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/aulasDisponibles")
+						 .param("horaInicio", inicioPeriodo.toString())  
+		                 .param("horaFin", finalPeriodo.toString())
+		                 .param("capacidad", "10")
+		                 .param("proyector", "false")
+		                 .param("altavoces", "false")
+		                 .accept(MediaType.APPLICATION_JSON);
+				
+		//Act
+		MvcResult mcvResult = mockMvc.perform(requestBuilder).andReturn();
+		
+		//Assert
+		Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), mcvResult.getResponse().getStatus());
 	}
 }
