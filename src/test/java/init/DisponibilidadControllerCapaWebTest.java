@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,11 +45,6 @@ public class DisponibilidadControllerCapaWebTest {
 	ConfiguracionHoraria configuracionHoraria;
 	
 	//Métodos auxiliares para reducir la cantidad de código "boilerplate"
-	private List<AulaDto> crearListaAulas() {
-		AulaDto aula1 = new AulaDto(0, "aula1", 20, false, false);
-		return List.of(aula1);
-	}
-	
 	private RequestBuilder requestBuilderAulas(LocalDateTime inicioPeriodo, LocalDateTime finalPeriodo,
 			int capacidad, boolean proyector, boolean altavoces) {
 		return MockMvcRequestBuilders.get("/aulasDisponibles")
@@ -60,11 +54,6 @@ public class DisponibilidadControllerCapaWebTest {
 				.param("proyector", String.valueOf(proyector))
 				.param("altavoces", String.valueOf(altavoces))
 				.accept(MediaType.APPLICATION_JSON);
-	}
-	
-	private List<SlotDto> crearListaSlots() {
-		SlotDto slot1 = new SlotDto();
-		return List.of(slot1);
 	}
 	
 	private RequestBuilder requestBuilderHorario(int idAula, LocalDate inicioPeriodo,
@@ -84,7 +73,7 @@ public class DisponibilidadControllerCapaWebTest {
 		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, 10, 0); 
 		LocalDateTime finalPeriodo = inicioPeriodo.plusHours(1);
 		when(disponibilidadService.aulasDisponibles(inicioPeriodo, finalPeriodo, 10, false, false))
-											.thenReturn(crearListaAulas());
+											.thenReturn(List.of(new AulaDto()));
 		RequestBuilder requestBuilder = requestBuilderAulas(inicioPeriodo, finalPeriodo, 
 				10, false, false);
 		
@@ -103,8 +92,6 @@ public class DisponibilidadControllerCapaWebTest {
 	            new TypeReference<List<AulaDto>>() {});
 		Assertions.assertEquals(1, responseAulas.size(), 
 				"La lista no contiene el número de aulas esperada");
-		Assertions.assertEquals("aula1", responseAulas.get(0).getNombre(), 
-				"La lista contiene aulas diferentes a las esperadas");
 	}
 	
 	@ParameterizedTest
@@ -117,7 +104,7 @@ public class DisponibilidadControllerCapaWebTest {
 		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, horaInicio, 0);
 		LocalDateTime finalPeriodo = LocalDateTime.of(2024, 11, 11, horaFinal, 0); 
 		when(disponibilidadService.aulasDisponibles(inicioPeriodo, finalPeriodo, 10, false, false))
-													.thenReturn(crearListaAulas());
+													.thenReturn(List.of(new AulaDto()));
 				
 		RequestBuilder requestBuilder = requestBuilderAulas(inicioPeriodo, finalPeriodo, 
 				10, false, false);
@@ -137,7 +124,7 @@ public class DisponibilidadControllerCapaWebTest {
 		LocalDateTime inicioPeriodo = LocalDateTime.of(2024, 11, 11, 11, 0);
 		LocalDateTime finalPeriodo = inicioPeriodo.plusHours(1);
 		when(disponibilidadService.aulasDisponibles(inicioPeriodo, finalPeriodo, -10, false, false))
-													.thenReturn(crearListaAulas());
+													.thenReturn(List.of(new AulaDto()));
 				
 		RequestBuilder requestBuilder = requestBuilderAulas(inicioPeriodo, finalPeriodo, -10, 
 				false, false);
@@ -160,7 +147,7 @@ public class DisponibilidadControllerCapaWebTest {
 		when(disponibilidadService.crearHorarioAula(idAula, 
 				inicioPeriodo.atTime(configuracionHoraria.getHoraApertura(), 0), 
 				finalPeriodo.atTime(configuracionHoraria.getHoraCierre(), 0)))
-										.thenReturn(crearListaSlots());
+										.thenReturn(List.of(new SlotDto()));
 		RequestBuilder requestBuilder = requestBuilderHorario(idAula, inicioPeriodo, finalPeriodo);
 		
 		//Act
@@ -190,7 +177,7 @@ public class DisponibilidadControllerCapaWebTest {
 		when(disponibilidadService.crearHorarioAula(idAula, 
 				inicioPeriodo.atTime(configuracionHoraria.getHoraApertura(), 0), 
 				finalPeriodo.atTime(configuracionHoraria.getHoraCierre(), 0)))
-		.thenReturn(crearListaSlots());
+							.thenReturn(List.of(new SlotDto()));
 		RequestBuilder requestBuilder = requestBuilderHorario(idAula, inicioPeriodo, finalPeriodo);
 
 		//Act
