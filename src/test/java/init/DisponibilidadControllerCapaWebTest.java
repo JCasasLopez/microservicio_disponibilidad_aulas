@@ -175,4 +175,28 @@ public class DisponibilidadControllerCapaWebTest {
 		Assertions.assertEquals(1, reponseSlots.size(), 
 				"La lista no contiene el número de slots esperado");
 	}
+	
+	@ParameterizedTest
+	@CsvSource ({"11, 10",  
+		    "21, 21",   
+		    })
+	@DisplayName("El día inicio no puede ser anterior al de finalización")
+	void crearHorarioAula_lanzaExcepcionSiFechasNoSonCorrectas(int diaInicio, int diaFinal) 
+			throws Exception {
+		//Arrange
+		int idAula = 1;
+		LocalDate inicioPeriodo = LocalDate.of(2024, 11, diaInicio);
+		LocalDate finalPeriodo = LocalDate.of(2024, 11, diaFinal);
+		when(disponibilidadService.crearHorarioAula(idAula, 
+				inicioPeriodo.atTime(configuracionHoraria.getHoraApertura(), 0), 
+				finalPeriodo.atTime(configuracionHoraria.getHoraCierre(), 0)))
+		.thenReturn(crearListaSlots());
+		RequestBuilder requestBuilder = requestBuilderHorario(idAula, inicioPeriodo, finalPeriodo);
+
+		//Act
+		MvcResult mcvResult = mockMvc.perform(requestBuilder).andReturn();
+		
+		//Assert
+		Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), mcvResult.getResponse().getStatus());
+	}
 }
