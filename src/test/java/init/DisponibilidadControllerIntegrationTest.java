@@ -1,11 +1,11 @@
 package init;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,13 +21,14 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import init.model.AulaDto;
-
+import init.model.SlotDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
@@ -41,7 +42,11 @@ public class DisponibilidadControllerIntegrationTest {
 					.withDatabaseName("reservasaulas")
 					.withUsername("root")
 					.withPassword("Vindel39!");
-
+	
+	static {
+        mySQLContainer.start();
+    }
+	
 	@Test
 	@DisplayName("El contenedor MySQL se ha creado y funciona correctamente")
 	void testContainerfunciona() {
@@ -85,7 +90,7 @@ public class DisponibilidadControllerIntegrationTest {
 	    assertNotNull(response.getBody());
 	    
 	    // Verifica que el Content-Type es correcto
-	    assertTrue(response.getHeaders().getContentType().includes(MediaType.APPLICATION_JSON));
+	    assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
 	    
 	    // Verifica que la respuesta es una lista (puede estar vacía o no)
 	    assertInstanceOf(List.class, response.getBody());
@@ -94,6 +99,46 @@ public class DisponibilidadControllerIntegrationTest {
 	    if (!response.getBody().isEmpty()) {
 	        assertInstanceOf(AulaDto.class, response.getBody().get(0));
 	    }
+	}
+	
+	@Test
+	@DisplayName("crearHorarioAula devuelve una respuesta válida")
+	void crearHorarioAula_devuelveRespuestaValida() {
+		//Arrange
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", "application/json");
+		
+		int idAula = 194;
+		LocalDate inicioPeriodo = LocalDate.now();
+		LocalDate finalPeriodo = inicioPeriodo.plusDays(1);
+		
+		String url = UriComponentsBuilder
+				.fromPath("/crearHorarioAula")
+				.queryParam("idAula", idAula)
+				.queryParam("inicioPeriodo", inicioPeriodo)
+				.queryParam("finalPeriodo", finalPeriodo)
+				.toUriString();
+				
+		HttpEntity requestEntity = new HttpEntity(null, headers);
+		
+		//Act
+		ResponseEntity<List<SlotDto>> response = testRestTemplate.exchange(
+				url, 
+				HttpMethod.GET,
+				requestEntity,
+				new ParameterizedTypeReference<List<SlotDto>>() {});
+		
+		System.out.println("Respuesta del servidor: " + response.getBody());
+		
+		//Assert
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+		assertInstanceOf(List.class, response.getBody());
+		if (!response.getBody().isEmpty()) {
+	        assertInstanceOf(SlotDto.class, response.getBody().get(0));
+	    }
+		
 	}
 
 }

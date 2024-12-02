@@ -61,7 +61,7 @@ public class DisponibilidadController {
 			throw new BadRequestException("La fecha de inicio debe ser anterior a la de finalización");
 		}
 		
-		LocalDateTime horaInicioPeriodo = inicioPeriodo.atTime(configuracionHoraria.getHoraApertura(),0 ,0);
+		LocalDateTime horaInicioPeriodo = inicioPeriodo.atTime(configuracionHoraria.getHoraApertura(), 0 ,0);
 		LocalDateTime horaFinalPeriodo = finalPeriodo.atTime(configuracionHoraria.getHoraCierre(), 0, 0);
 
 		List<SlotDto> horarioAula = disponibilidadService.crearHorarioAula(idAula, horaInicioPeriodo, 
