@@ -40,7 +40,7 @@ class DaoTest {
 	}
 	
 	private Usuario crearUsuario() {
-		return new Usuario(0, "aaa@gmail.com", "Jorge", "Casas López", LocalDate.of(1978, 11, 26), "Vindel39!");
+		return new Usuario(0, "aaa@gmail.com", "Jorge", "Casas López", LocalDate.of(1978, 11, 26), "Vindel39!", false);
 	}
 	
 	private List<Reserva> crearReservas(Aula aula, Usuario usuario){
@@ -178,7 +178,7 @@ class DaoTest {
 	void noDeberiaPersistirUsuariosConEmailDuplicado() {
 		// Arrange
 		Usuario usuarioBD = crearUsuario();
-		Usuario usuarioDuplicado = new Usuario(0, usuarioBD.getEmail(), "Luis", "García", LocalDate.of(1978, 11, 27), "Vindel49!");
+		Usuario usuarioDuplicado = new Usuario(0, usuarioBD.getEmail(), "Luis", "García", LocalDate.of(1978, 11, 27), "Vindel49!", false);
 
 		// Act
 		usuariosDao.save(usuarioBD);

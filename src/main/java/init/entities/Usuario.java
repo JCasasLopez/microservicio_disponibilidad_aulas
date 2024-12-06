@@ -28,18 +28,19 @@ public class Usuario {
 	private String apellidos;
 	private LocalDate fechaNacimiento;
 	private String password;
+	private boolean isAdmin;
 	@OneToMany(mappedBy="usuario")
 	private List<Reserva> reservas;
 	
 	public Usuario(int idUsuario, String email, String nombre, String apellidos, LocalDate fechaNacimiento,
-			String password) {
-		super();
+			String password, boolean isAdmin) {
 		this.idUsuario = idUsuario;
 		this.email = email;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
 		this.fechaNacimiento = fechaNacimiento;
 		this.password = password;
+		this.isAdmin = isAdmin;
 	}
 
 	public Usuario() {
@@ -94,6 +95,14 @@ public class Usuario {
 		this.password = password;
 	}
 
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+
 	public List<Reserva> getReservas() {
 		return reservas;
 	}
@@ -101,7 +110,5 @@ public class Usuario {
 	public void setReservas(List<Reserva> reservas) {
 		this.reservas = reservas;
 	}
-	
-	
 	
 }

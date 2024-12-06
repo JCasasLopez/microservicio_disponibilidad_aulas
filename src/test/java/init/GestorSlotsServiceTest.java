@@ -49,7 +49,7 @@ public class GestorSlotsServiceTest {
     
     Usuario crearUsuario() {
     	return new Usuario(0, "aaa@gmail.com", "Jorge", "Casas López", LocalDate.of(1978, 11, 26), 
-    															"Vindel39!");
+    															"Vindel39!", false);
     }
 	
 	@ParameterizedTest
