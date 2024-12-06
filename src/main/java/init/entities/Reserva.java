@@ -12,15 +12,6 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name="reservas")
 public class Reserva {
-
-	//La relación Aula/Reserva es unidireccional y solo se establece en Aula 
-	//(solo es necesario saber las reservas que tiene cada aula)
-	//No es necesario establecer la relación entre Reserva y Usuario (no va a haber búsquedas
-	//que relacionen ambas, ni se va a persistir ninguna entidad)
-	
-	//Aunque no sería estrictamente necesario para la lógica de negocio del microservicio declarar
-	//la relación de dependencia en ambas direcciones, si que es conveniente para los tests.
-
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int idReserva;

@@ -14,11 +14,10 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name="usuarios")
 public class Usuario {
-	//No hace falta establecer la relación entre Usuario y Reserva (no va a haber búsquedas
-	//que relacionen ambas, ni se va a persistir ninguna entidad)
-
-	//Aunque no sería estrictamente necesario para la lógica de negocio del microservicio declarar
-	//la relación de dependencia en ambas direcciones, si que es conveniente para los tests.
+	//Defino la entidad Usuario como aparece en la base de datos (no como proxy) y 
+	//con sus relaciones, etc, porque aunque estrictamente no hace falta, quiero testearla 
+	//y verificar que la base de datos y las entidades están bien diseñadas y todo funciona.
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int idUsuario;
