@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,9 +22,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -42,10 +43,6 @@ public class DisponibilidadControllerIntegrationTest {
 					.withDatabaseName("reservasaulas")
 					.withUsername("root")
 					.withPassword("Vindel39!");
-	
-	static {
-        mySQLContainer.start();
-    }
 	
 	@Test
 	@DisplayName("El contenedor MySQL se ha creado y funciona correctamente")
@@ -127,8 +124,6 @@ public class DisponibilidadControllerIntegrationTest {
 				HttpMethod.GET,
 				requestEntity,
 				new ParameterizedTypeReference<List<SlotDto>>() {});
-		
-		System.out.println("Respuesta del servidor: " + response.getBody());
 		
 		//Assert
 		assertEquals(HttpStatus.OK, response.getStatusCode());
